@@ -1,0 +1,155 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #080d1b;
+    color: #ffffff;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 8%;
+    background: #0d1528;
+}
+
+.logo {
+    font-size: 22px;
+    font-weight: bold;
+    color: #ffffff;
+}
+
+.logo span {
+    color: #38bdf8;
+}
+
+nav a {
+    color: #cbd5e1;
+    text-decoration: none;
+    margin-left: 25px;
+}
+
+nav a:hover {
+    color: #38bdf8;
+}
+
+.hero {
+    min-height: 470px;
+    display: flex;
+    align-items: center;
+    padding: 70px 10%;
+    background: linear-gradient(120deg, #101d38, #080d1b);
+}
+
+.tagline {
+    color: #38bdf8;
+    letter-spacing: 3px;
+    font-size: 13px;
+    margin-bottom: 22px;
+}
+
+.hero h1 {
+    font-size: 52px;
+    line-height: 1.2;
+    margin-bottom: 20px;
+}
+
+.hero h1 span {
+    color: #38bdf8;
+}
+
+.description {
+    color: #aab7ca;
+    line-height: 1.8;
+    max-width: 600px;
+    margin-bottom: 30px;
+}
+
+.primary-btn {
+    display: inline-block;
+    background: #087fc1;
+    color: white;
+    padding: 14px 25px;
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.primary-btn:hover {
+    background: #0ea5e9;
+}
+
+.scanner-section,
+.about-section {
+    padding: 65px 10%;
+    text-align: center;
+}
+
+.scanner-section h2,
+.about-section h2 {
+    font-size: 30px;
+    margin-bottom: 15px;
+}
+
+.scanner-section > p,
+.about-section p {
+    color: #aab7ca;
+    margin-bottom: 25px;
+    line-height: 1.7;
+}
+
+textarea {
+    display: block;
+    width: 100%;
+    min-height: 230px;
+    padding: 20px;
+    margin: 25px 0;
+    background: #111c32;
+    color: #ffffff;
+    border: 1px solid #334155;
+    border-radius: 10px;
+    font-family: monospace;
+    font-size: 14px;
+    resize: vertical;
+}
+
+.results {
+    margin-top: 35px;
+    padding: 25px;
+    background: #111c32;
+    border-radius: 10px;
+    text-align: left;
+}
+
+.finding {
+    padding: 15px;
+    margin-top: 15px;
+    background: #1e293b;
+    border-radius: 7px;
+}
+
+.severity {
+    color: #fb7185;
+    float: right;
+    font-weight: bold;
+}
+
+.finding p {
+    color: #cbd5e1;
+    margin-top: 10px;
+}
+
+footer {
+    padding: 25px;
+    text-align: center;
+    background: #0d1528;
+    color: #94a3b8;
+}
