@@ -1,76 +1,990 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rakshak Code AI | Code Security</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>Rakshak Code AI | Code Security Platform</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #0b1020;
+            color: #f1f5f9;
+            line-height: 1.6;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            padding: 18px 6%;
+            background: #111827;
+            border-bottom: 1px solid #334155;
+            gap: 12px;
+        }
+
+        nav h2, .section-title, .feature-card h3 {
+            color: #38bdf8;
+        }
+
+        nav a {
+            color: #e2e8f0;
+            text-decoration: none;
+            margin: 7px;
+            font-size: 14px;
+        }
+
+        nav a:hover { color: #38bdf8; }
+
+        .hero {
+            text-align: center;
+            padding: 85px 20px;
+            background: linear-gradient(135deg, #111827, #172554);
+        }
+
+        .hero-label {
+            color: #38bdf8;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        .hero h1 {
+            font-size: clamp(34px, 5vw, 55px);
+            line-height: 1.2;
+            margin: 20px 0;
+        }
+
+        .hero h1 span { color: #38bdf8; }
+
+        .hero p {
+            max-width: 700px;
+            margin: 15px auto;
+            color: #cbd5e1;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1100px;
+            margin: 45px auto;
+        }
+
+        .section-title {
+            font-size: 27px;
+            margin-bottom: 10px;
+        }
+
+        .description {
+            color: #cbd5e1;
+            margin-bottom: 20px;
+        }
+
+        .panel, .result-card {
+            background: #151e30;
+            border: 1px solid #334155;
+            border-radius: 13px;
+            padding: 24px;
+            margin: 22px 0;
+        }
+
+        .feature-card {
+            background: #151e30;
+            border: 1px solid #334155;
+            padding: 22px;
+            border-radius: 12px;
+            margin: 12px 0;
+            min-width: 0;
+        }
+
+        .feature-card h3 { margin-bottom: 12px; }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 18px;
+        }
+
+        .button {
+            display: inline-block;
+            background: #0284c7;
+            color: white;
+            border: none;
+            padding: 12px 22px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 15px;
+            margin-top: 12px;
+        }
+
+        .button:hover { background: #0369a1; }
+
+        .secondary-button { background: #475569; }
+
+        textarea {
+            width: 100%;
+            min-height: 220px;
+            padding: 16px;
+            background: #080e1c;
+            color: #a7f3d0;
+            border: 1px solid #475569;
+            border-radius: 9px;
+            font-family: Consolas, monospace;
+            font-size: 14px;
+            resize: vertical;
+        }
+
+        textarea:focus { outline: 2px solid #0284c7; }
+
+        input[type="hidden"] { display: none; }
+
+        h3 { margin: 12px 0; }
+
+        .finding {
+            background: #202b40;
+            border-left: 4px solid #ef4444;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 13px 0;
+            overflow-wrap: anywhere;
+        }
+
+        .finding p { margin: 5px 0; }
+
+        .fingerprint {
+            background: #080e1c;
+            color: #a7f3d0;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+            font-family: Consolas, monospace;
+            font-size: 13px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 14px;
+            margin: 22px 0;
+        }
+
+        .stat {
+            background: #202b40;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 18px;
+            text-align: center;
+        }
+
+        .stat strong {
+            display: block;
+            color: #38bdf8;
+            font-size: 29px;
+        }
+
+        .stat span {
+            color: #cbd5e1;
+            font-size: 13px;
+        }
+
+        .risk-badge {
+            display: inline-block;
+            padding: 7px 15px;
+            border-radius: 20px;
+            color: white;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        .risk-high { background: #dc2626; }
+        .risk-medium { background: #d97706; }
+        .risk-low { background: #15803d; }
+        .risk-clean { background: #2563eb; }
+
+        .nutrition-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #475569;
+        }
+
+        .nutrition-recommendations {
+            background: #202b40;
+            padding: 18px;
+            border-radius: 10px;
+            margin-top: 22px;
+        }
+
+        .nutrition-recommendations p { margin: 9px 0; }
+
+        .flow-card {
+            background: #202b40;
+            border: 1px solid #475569;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .flow-arrow {
+            font-size: 25px;
+            color: #38bdf8;
+        }
+
+        .flow-warning {
+            color: #fca5a5;
+            font-weight: bold;
+        }
+
+        .error {
+            background: #450a0a;
+            border: 1px solid #ef4444;
+            color: #fecaca;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .success {
+            background: #064e3b;
+            border: 1px solid #059669;
+            color: #d1fae5;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        pre {
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+            background: #080e1c;
+            color: #a7f3d0;
+            padding: 18px;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+
+        .disclaimer {
+            color: #94a3b8;
+            font-size: 12px;
+            margin-top: 18px;
+        }
+
+        footer {
+            background: #111827;
+            text-align: center;
+            padding: 25px;
+            color: #94a3b8;
+            margin-top: 60px;
+        }
+
+        @media(max-width: 650px) {
+            nav { flex-direction: column; }
+            nav div {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .container { width: 94%; }
+            .panel, .result-card { padding: 16px; }
+        }
+    </style>
 </head>
+
 <body>
 
-<header class="navbar">
-    <div class="logo">🛡️ RAKSHAK <span>CODE AI</span></div>
-    <nav>
+<!-- NAVIGATION -->
+<nav>
+    <h2>🛡️ RAKSHAK CODE AI</h2>
+    <div>
         <a href="/">Home</a>
-        <a href="#scanner">Code Scanner</a>
+        <a href="#scanner">Scanner</a>
+        <a href="#impact-map">Impact Map</a>
+        <a href="#nutrition-label">Nutrition Label</a>
+        <a href="#what-if">What-If</a>
+        <a href="#fix-confidence">Fix Lab</a>
+        <a href="#configuration">Configuration</a>
+        <a href="#comparison">Comparison</a>
+        <a href="#learning-mode">Learning Mode</a>
         <a href="#about">About</a>
-    </nav>
+    </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+    <p class="hero-label">AI-POWERED CODE SECURITY PLATFORM</p>
+
+    <h1>
+        Secure Your Code<br>
+        <span>Before You Deploy.</span>
+    </h1>
+
+    <p>
+        Detect vulnerabilities, understand security risks and
+        build safer AI-generated code with Rakshak Code AI.
+    </p>
+
+    <a href="#scanner" class="button">Start Security Scan →</a>
 </header>
 
-<section class="hero">
-    <div class="hero-content">
-        <p class="tagline">AI-POWERED CODE SECURITY PLATFORM</p>
-        <h1>Secure Your Code<br><span>Before You Deploy.</span></h1>
+<!-- MAIN SCANNER -->
+<main class="container" id="scanner">
+
+    <h2 class="section-title">Code Security Scanner</h2>
+
+    <p class="description">
+        Paste your Python code below to inspect potential security risks.
+    </p>
+
+    <div class="panel">
+        <form method="POST" action="#scanner">
+            <input type="hidden" name="action" value="scan">
+
+            <textarea
+                name="code"
+                placeholder="Paste your Python code here..."
+                required
+            >{{ submitted_code }}</textarea>
+
+            <button type="submit" class="button">
+                🔍 Scan My Code
+            </button>
+        </form>
+
+        {% if submitted_code %}
+        <form method="POST" action="#scanner" style="margin-top:12px;">
+            <input type="hidden" name="action" value="fix">
+            <textarea name="code" hidden>{{ submitted_code }}</textarea>
+
+            <button type="submit" class="button secondary-button">
+                🛠️ Fix My Code
+            </button>
+        </form>
+        {% endif %}
+    </div>
+
+    <!-- FIX RESULTS -->
+    {% if fix_requested %}
+        {% if fix_error %}
+            <div class="error">{{ fix_error }}</div>
+        {% elif corrected_code %}
+            <div class="result-card">
+                <h2 class="section-title">Corrected Code</h2>
+                <pre>{{ corrected_code }}</pre>
+                <p class="disclaimer">
+                    This correction uses local rule-based logic.
+                    Review and test the result before using it.
+                </p>
+            </div>
+        {% endif %}
+    {% endif %}
+
+    <!-- SCAN RESULTS -->
+    {% if scanned %}
+    <section class="result-card">
+        <h2 class="section-title">Security Scan Results</h2>
+
+        {% if fingerprint %}
+            <h3>🧬 Code DNA Fingerprint</h3>
+            <p class="description">
+                SHA-256 identity of your submitted code:
+            </p>
+            <div class="fingerprint">{{ fingerprint }}</div>
+        {% endif %}
+
+        <h3>Potential issues detected: {{ findings|length }}</h3>
+
+        {% if findings %}
+            {% for finding in findings %}
+                <div class="finding">
+                    <strong>
+                        {{ finding.get('issue', finding.get('name', 'Security Finding')) }}
+                    </strong>
+
+                    <span class="risk-badge risk-high">
+                        {{ finding.get('severity', 'Review') }}
+                    </span>
+
+                    <p>
+                        <strong>Line:</strong>
+                        {{ finding.get('line', 'Not specified') }}
+                    </p>
+
+                    <p>
+                        <strong>Why it matters:</strong>
+                        {{ finding.get('description', finding.get('message', 'Review this security pattern.')) }}
+                    </p>
+
+                    <p>
+                        <strong>Recommended fix:</strong>
+                        {{ finding.get('recommendation', 'Review and correct this security pattern.') }}
+                    </p>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="success">
+                No matching security issues were detected by the current rules.
+            </div>
+        {% endif %}
+    </section>
+
+    <!-- SECURITY IMPACT MAP -->
+    {% if impact_map %}
+    <section class="result-card" id="impact-map">
+        <h2 class="section-title">🗺️ Security Impact Map</h2>
+
         <p class="description">
-            Detect vulnerabilities, understand security risks
-            and build safer AI-generated code with Rakshak Code AI.
+            Visualize how untrusted input flows through variables
+            to sensitive operations.
         </p>
-        <a href="#scanner" class="primary-btn">Start Security Scan →</a>
+
+        {% set summary = impact_map.get('summary', {}) %}
+
+        <div class="stats-grid">
+            <div class="stat">
+                <strong>{{ summary.get('input_sources', 0) }}</strong>
+                <span>Input Sources</span>
+            </div>
+
+            <div class="stat">
+                <strong>{{ summary.get('sensitive_operations', 0) }}</strong>
+                <span>Sensitive Operations</span>
+            </div>
+
+            <div class="stat">
+                <strong>{{ summary.get('potential_risk_paths', 0) }}</strong>
+                <span>Potential Risk Paths</span>
+            </div>
+        </div>
+
+        <h3>Data Flow Visualization</h3>
+
+        {% for path in impact_map.get('paths', []) %}
+            <div class="flow-card">
+                <h3>👤 INPUT SOURCE</h3>
+                <p>{{ path.get('source', 'User Input') }}</p>
+                <p>Variable: {{ path.get('variable', 'Unknown') }}</p>
+                <p>Line: {{ path.get('source_line', '-') }}</p>
+
+                <div class="flow-arrow">↓</div>
+
+                <h3>📦 TRACKED VARIABLE</h3>
+                <p>{{ path.get('variable', 'Unknown') }}</p>
+
+                <div class="flow-arrow">↓</div>
+
+                <h3>⚙️ SENSITIVE OPERATION</h3>
+                <p>{{ path.get('destination', 'Unknown') }}</p>
+                <p>Line: {{ path.get('destination_line', '-') }}</p>
+
+                <p class="flow-warning">⚠️ Potentially unsafe data flow</p>
+            </div>
+        {% else %}
+            <p>No potential risk paths were identified.</p>
+        {% endfor %}
+
+        <div class="two-column">
+            <div>
+                <h3>📥 Detected Input Sources</h3>
+
+                {% for source in impact_map.get('sources', []) %}
+                    <div class="finding">
+                        <strong>{{ source.get('type', 'Input Source') }}</strong>
+                        <p>{{ source.get('function', '') }}</p>
+                        <p>Line: {{ source.get('line', '-') }}</p>
+                    </div>
+                {% else %}
+                    <p>No input sources detected.</p>
+                {% endfor %}
+            </div>
+
+            <div>
+                <h3>⚠️ Sensitive Operations</h3>
+
+                {% for sink in impact_map.get('sinks', []) %}
+                    <div class="finding">
+                        <strong>{{ sink.get('operation', 'Operation') }}</strong>
+                        <p>{{ sink.get('description', '') }}</p>
+                        <p>Line: {{ sink.get('line', '-') }}</p>
+                    </div>
+                {% else %}
+                    <p>No sensitive operations detected.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <p class="disclaimer">
+            {{ impact_map.get('disclaimer', 'Detected paths are potential risks, not proof of exploitability.') }}
+        </p>
+    </section>
+    {% endif %}
+
+    <!-- SECURITY NUTRITION LABEL -->
+    {% if nutrition_label %}
+    <section class="result-card" id="nutrition-label">
+        <h2 class="section-title">🛡️ Security Nutrition Label</h2>
+
+        <p class="description">Your code's security health summary.</p>
+
+        <div class="nutrition-header">
+            <h2>RAKSHAK CODE AI</h2>
+
+            {% set risk = nutrition_label.get('risk_level', 'Unknown') %}
+
+            <span class="risk-badge
+                {% if risk == 'High' %}risk-high
+                {% elif risk == 'Medium' %}risk-medium
+                {% elif risk == 'Low' %}risk-low
+                {% else %}risk-clean{% endif %}">
+                {{ risk }} RISK
+            </span>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat">
+                <strong>{{ nutrition_label.get('total_issues', 0) }}</strong>
+                <span>Total Issues</span>
+            </div>
+
+            <div class="stat">
+                <strong>{{ nutrition_label.get('critical_issues', 0) }}</strong>
+                <span>Critical</span>
+            </div>
+
+            <div class="stat">
+                <strong>{{ nutrition_label.get('high_issues', 0) }}</strong>
+                <span>High</span>
+            </div>
+
+            <div class="stat">
+                <strong>{{ nutrition_label.get('medium_issues', 0) }}</strong>
+                <span>Medium</span>
+            </div>
+
+            <div class="stat">
+                <strong>{{ nutrition_label.get('low_issues', 0) }}</strong>
+                <span>Low</span>
+            </div>
+
+            <div class="stat">
+                <strong>{{ nutrition_label.get('input_sources', 0) }}</strong>
+                <span>Input Sources</span>
+            </div>
+
+            <div class="stat">
+                <strong>{{ nutrition_label.get('sensitive_operations', 0) }}</strong>
+                <span>Sensitive Operations</span>
+            </div>
+
+            <div class="stat">
+                <strong>{{ nutrition_label.get('potential_risk_paths', 0) }}</strong>
+                <span>Potential Risk Paths</span>
+            </div>
+        </div>
+
+        <div class="nutrition-recommendations">
+            <h3>Security Recommendations</h3>
+
+            {% for item in nutrition_label.get('recommendations', []) %}
+                <p>🛡️ {{ item }}</p>
+            {% else %}
+                <p>No matching issues were detected.</p>
+            {% endfor %}
+        </div>
+
+        <p class="disclaimer">
+            {{ nutrition_label.get('disclaimer', 'This label summarizes detected patterns and does not guarantee security.') }}
+        </p>
+    </section>
+    {% endif %}
+
+    <!-- WHAT-IF SECURITY SIMULATOR -->
+    <section class="result-card" id="what-if">
+        <h2 class="section-title">🔮 What-If Security Simulator</h2>
+
+        <p class="description">
+            Explore possible consequences of detected security issues.
+        </p>
+
+        {% if what_if_result %}
+            <div class="stats-grid">
+                <div class="stat">
+                    <strong>{{ what_if_result.get('total_scenarios', 0) }}</strong>
+                    <span>Scenarios</span>
+                </div>
+
+                <div class="stat">
+                    <strong>{{ what_if_result.get('potential_risk_paths', 0) }}</strong>
+                    <span>Potential Risk Paths</span>
+                </div>
+            </div>
+
+            {% for scenario in what_if_result.get('scenarios', []) %}
+                <div class="finding">
+                    <h3>{{ scenario.get('issue', 'Security Issue') }}</h3>
+                    <p><strong>Line:</strong> {{ scenario.get('line', '-') }}</p>
+                    <p><strong>What if?</strong> {{ scenario.get('what_if', '') }}</p>
+                    <p><strong>Recommended action:</strong> {{ scenario.get('recommended_action', '') }}</p>
+
+                    <span class="risk-badge risk-medium">
+                        {{ scenario.get('status', 'Potential Risk') }}
+                    </span>
+                </div>
+            {% else %}
+                <div class="success">No matching security scenarios were found.</div>
+            {% endfor %}
+
+            <p class="disclaimer">
+                {{ what_if_result.get('disclaimer', 'Educational simulation only. No actual attacks are performed.') }}
+            </p>
+        {% else %}
+            <p>Scan your code to generate What-If security scenarios.</p>
+        {% endif %}
+    </section>
+
+    <!-- AI FIX CONFIDENCE LAB -->
+    <section class="result-card" id="fix-confidence">
+        <h2 class="section-title">🧪 AI Fix Confidence Lab</h2>
+
+        <p class="description">
+            Evaluate a suggested code correction using syntax and scanner checks.
+        </p>
+
+        {% if fix_confidence %}
+            <div class="stats-grid">
+                <div class="stat">
+                    <strong>{{ fix_confidence.get('confidence', 0) }}%</strong>
+                    <span>Heuristic Confidence</span>
+                </div>
+
+                <div class="stat">
+                    <strong>{{ fix_confidence.get('original_findings', 0) }}</strong>
+                    <span>Original Findings</span>
+                </div>
+
+                <div class="stat">
+                    <strong>{{ fix_confidence.get('remaining_findings', 0) }}</strong>
+                    <span>Remaining Findings</span>
+                </div>
+            </div>
+
+            <h3>{{ fix_confidence.get('status', 'Not evaluated') }}</h3>
+
+            {% for check in fix_confidence.get('checks', []) %}
+                <div class="finding">
+                    <strong>{{ check.get('name', 'Check') }}</strong>
+
+                    {% if check.get('status') %}
+                        <p>Status: {{ check.status }}</p>
+                    {% endif %}
+
+                    {% if check.get('count') is not none %}
+                        <p>Findings: {{ check.count }}</p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            <p class="disclaimer">
+                {{ fix_confidence.get('message', 'This score is not a guarantee of security.') }}
+            </p>
+        {% else %}
+            <p>Enter code and click Fix My Code to evaluate a correction.</p>
+        {% endif %}
+    </section>
+
+    {% endif %}
+</main>
+
+<!-- MISSING CONFIGURATION CHECKER -->
+<section class="container" id="configuration">
+    <h2 class="section-title">⚙️ Missing Configuration Checker</h2>
+
+    <p class="description">
+        Inspect selected project files for potentially missing
+        security-related configuration.
+    </p>
+
+    <div class="result-card">
+        {% if configuration_report and configuration_report.get('success') %}
+
+            <div class="stats-grid">
+                <div class="stat">
+                    <strong>{{ configuration_report.get('total_checks', 0) }}</strong>
+                    <span>Configuration Checks</span>
+                </div>
+
+                <div class="stat">
+                    <strong>{{ configuration_report.get('potential_missing_items', 0) }}</strong>
+                    <span>Warnings or Missing Items</span>
+                </div>
+            </div>
+
+            {% for check in configuration_report.get('checks', []) %}
+                <div class="finding">
+                    <h3>{{ check.get('name', 'Configuration Check') }}</h3>
+
+                    {% if check.get('status') == 'Present' or check.get('status') == 'Passed' %}
+                        <span class="risk-badge risk-low">
+                            {{ check.get('status') }}
+                        </span>
+                    {% elif check.get('status') == 'Missing' or check.get('status') == 'Warning' %}
+                        <span class="risk-badge risk-high">
+                            {{ check.get('status') }}
+                        </span>
+                    {% else %}
+                        <span class="risk-badge risk-medium">
+                            {{ check.get('status') }}
+                        </span>
+                    {% endif %}
+
+                    <p>{{ check.get('recommendation', '') }}</p>
+                </div>
+            {% endfor %}
+
+            <p class="disclaimer">
+                {{ configuration_report.get('disclaimer', 'Only selected project settings are checked. Review production configuration manually.') }}
+            </p>
+        {% else %}
+            <p>
+                {{ configuration_report.get('message', 'Configuration report is not available.') }}
+            </p>
+        {% endif %}
     </div>
 </section>
 
-<section class="scanner-section" id="scanner">
-    <h2>Code Security Scanner</h2>
-    <p>Paste your Python code below to inspect potential security risks.</p>
+<!-- CODE VERSION COMPARISON -->
+<section class="container" id="comparison">
+    <h2 class="section-title">🔄 AI Code Origin Comparison</h2>
 
-    <form method="POST">
-        <textarea name="code" placeholder="Paste your code here..." required>{{ submitted_code }}</textarea>
-        <button type="submit" class="primary-btn">Scan My Code</button>
-    </form>
-
-    {% if scanned %}
-        <div class="results">
-            <h3>Security Scan Results</h3>
-
-            {% if findings %}
-                <p>Potential issues detected: {{ findings|length }}</p>
-
-                {% for finding in findings %}
-                    <div class="finding">
-                        <strong>{{ finding.issue }}</strong>
-                        <span class="severity">{{ finding.severity }}</span>
-                        <p>Line: {{ finding.line }}</p>
-                    </div>
-                {% endfor %}
-            {% else %}
-                <p>No issues were detected by the current scanner rules.</p>
-                <p>This does not guarantee that the code is secure.</p>
-            {% endif %}
-        </div>
-    {% endif %}
-</section>
-
-<section class="about-section" id="about">
-    <h2>Why Rakshak Code AI?</h2>
-    <p>
-        Our mission is to help developers identify security risks
-        in AI-generated code before using it in real applications.
+    <p class="description">
+        Compare two code versions and identify changes in detected
+        security findings. This does not prove whether code was written by AI.
     </p>
+
+    <div class="panel">
+        <form method="POST" action="#comparison">
+            <input type="hidden" name="action" value="compare">
+
+            <div class="two-column">
+                <div>
+                    <h3>Original Code</h3>
+                    <textarea
+                        name="old_code"
+                        placeholder="Paste original code..."
+                        required
+                    >{{ old_code }}</textarea>
+                </div>
+
+                <div>
+                    <h3>Updated Code</h3>
+                    <textarea
+                        name="new_code"
+                        placeholder="Paste updated code..."
+                        required
+                    >{{ new_code }}</textarea>
+                </div>
+            </div>
+
+            <button type="submit" class="button">
+                Compare Code Versions
+            </button>
+        </form>
+
+        {% if comparison %}
+        <div class="result-card">
+            <h3>Comparison Results</h3>
+
+            <!-- OLD AND UPDATED DNA FINGERPRINTS -->
+            <h3>🧬 Code DNA Fingerprint Comparison</h3>
+
+            <div class="two-column">
+                <div class="feature-card">
+                    <h3>Old Code DNA Fingerprint</h3>
+                    <p class="description">Original Version · SHA-256</p>
+
+                    <div class="fingerprint">
+                        {{ comparison.get('old_fingerprint', 'Not available') }}
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <h3>Updated Code DNA Fingerprint</h3>
+                    <p class="description">Updated Version · SHA-256</p>
+
+                    <div class="fingerprint">
+                        {{ comparison.get('new_fingerprint', 'Not available') }}
+                    </div>
+                </div>
+            </div>
+
+            {% if comparison.get('old_fingerprint') and comparison.get('new_fingerprint') %}
+                {% if comparison.get('old_fingerprint') == comparison.get('new_fingerprint') %}
+                    <div class="success">
+                        ✅ Both fingerprints match. The submitted code versions are identical.
+                    </div>
+                {% else %}
+                    <div class="finding">
+                        ⚠️ Fingerprints differ. The submitted code versions have changed.
+                    </div>
+                {% endif %}
+            {% else %}
+                <div class="error">
+                    Fingerprints were not returned by the comparison function.
+                    Check compare_code_versions() in security_scanner.py.
+                </div>
+            {% endif %}
+
+            <div class="stats-grid">
+                <div class="stat">
+                    <strong>{{ comparison.get('fixed', [])|length }}</strong>
+                    <span>Fixed Findings</span>
+                </div>
+
+                <div class="stat">
+                    <strong>{{ comparison.get('remaining', [])|length }}</strong>
+                    <span>Remaining Findings</span>
+                </div>
+
+                <div class="stat">
+                    <strong>{{ comparison.get('introduced', [])|length }}</strong>
+                    <span>New Findings</span>
+                </div>
+            </div>
+
+            <h3>Fixed Findings</h3>
+            {% for item in comparison.get('fixed', []) %}
+                <p>✅ {{ item }}</p>
+            {% else %}
+                <p>No fixed findings reported.</p>
+            {% endfor %}
+
+            <h3>Remaining Findings</h3>
+            {% for item in comparison.get('remaining', []) %}
+                <p>⚠️ {{ item }}</p>
+            {% else %}
+                <p>No remaining findings reported.</p>
+            {% endfor %}
+
+            <h3>New Findings</h3>
+            {% for item in comparison.get('introduced', []) %}
+                <p>🔴 {{ item }}</p>
+            {% else %}
+                <p>No new findings reported.</p>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
 </section>
 
+<!-- SECURITY LEARNING MODE -->
+<section class="container" id="learning-mode">
+    <h2 class="section-title">📘 Security Learning Mode</h2>
+
+    <p class="description">
+        Learn common coding vulnerabilities and how to prevent them.
+    </p>
+
+    <div class="two-column">
+        <div class="feature-card">
+            <h3>1. Hardcoded Secrets</h3>
+            <p><strong>Risk:</strong> Passwords and API keys stored directly in source code.</p>
+
+            <pre>password = "admin123"</pre>
+
+            <p><strong>Safer approach:</strong> Use environment variables.</p>
+
+            <pre>import os
+password = os.getenv("PASSWORD")</pre>
+        </div>
+
+        <div class="feature-card">
+            <h3>2. SQL Injection</h3>
+            <p><strong>Risk:</strong> Joining untrusted user input into a SQL query.</p>
+
+            <pre>query = "SELECT * FROM users WHERE name = '" + username + "'"</pre>
+
+            <p><strong>Safer approach:</strong> Use parameterized queries.</p>
+
+            <pre>cursor.execute(
+    "SELECT * FROM users WHERE name = ?",
+    (username,)
+)</pre>
+        </div>
+
+        <div class="feature-card">
+            <h3>3. Unsafe eval()</h3>
+            <p><strong>Risk:</strong> Executing untrusted text as Python code.</p>
+
+            <pre>result = eval(user_input)</pre>
+
+            <p><strong>Safer approach for integer input:</strong></p>
+
+            <pre>number = int(user_input)</pre>
+        </div>
+
+        <div class="feature-card">
+            <h3>4. Unsafe System Commands</h3>
+            <p><strong>Risk:</strong> Passing untrusted input to a shell command.</p>
+
+            <pre>os.system(user_command)</pre>
+
+            <p><strong>Safer approach:</strong> Use a fixed executable and argument list.</p>
+
+            <pre>import subprocess
+
+subprocess.run(
+    ["whoami"],
+    check=True,
+    shell=False
+)</pre>
+        </div>
+    </div>
+
+    <div class="panel">
+        <h3>🛡️ Security Reminder</h3>
+        <p>
+            Scanner results are pattern-based and may miss vulnerabilities
+            or flag safe code. Review data flows, validate inputs, use safe
+            APIs, and test changes before deployment.
+        </p>
+    </div>
+</section>
+
+<!-- ABOUT -->
+<section class="container" id="about">
+    <h2 class="section-title">Why Rakshak Code AI?</h2>
+
+    <div class="panel">
+        <p>
+            Our mission is to help developers identify security risks
+            in AI-generated code before using it in real applications.
+        </p>
+
+        <p style="margin-top:15px;">
+            Rakshak Code AI provides code scanning, code fingerprints,
+            security impact visualization, security nutrition labels,
+            What-If security simulations, code correction evaluation,
+            configuration checks, code version comparison and security learning.
+        </p>
+    </div>
+</section>
+
+<!-- FOOTER -->
 <footer>
-    <p>© 2026 Rakshak Code AI | Inspect. Detect. Secure. Verify.</p>
+    © 2026 Rakshak Code AI |
+    Inspect. Detect. Secure. Verify.
 </footer>
 
 </body>
